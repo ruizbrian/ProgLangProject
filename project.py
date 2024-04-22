@@ -38,13 +38,14 @@ def cleanData(data):
     return data
 
 def main():
-    filePath = "/home/stu/gjimenez3/3500/project/US_Accidents_data.csv"
+    filePath = "/home/stu/gjimenez3/3500/ProgLangProject/data/US_Accidents_data.csv"
     #filePath = "/home/stu/gjimenez3/3500/project/InputDataSample.csv"
 
     data = loadData(filePath)
 
     cleanedData = cleanData(data)
 
+    print(data)
     print(cleanedData)
 
 if __name__ == "__main__":
