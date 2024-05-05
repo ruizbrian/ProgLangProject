@@ -164,10 +164,11 @@ def Question10(data):
         print("No accidents recorded in Las Vegas during Spring (March, April, May).")
     else:
         lv_data = lv_data.copy()
-        lv_data['Duration'] = lv_data['End_Time'] - lv_data['Start_Time']
-        longest_accident = lv_data.loc[lv_data['Duration'].idxmax()]
-        print("Longest accident recorded in Las Vegas during Spring (March, April, May):")
-        print(longest_accident)
+        lv_data['Duration'] = (lv_data['End_Time'] - lv_data['Start_Time']).dt.total_seconds() / 3600
+        longest_accidents_per_year = lv_data.groupby(lv_data['Start_Time'].dt.year)['Duration'].max()
+        print("Longest accident (in hours) recorded in Las Vegas in the Spring (March, April, and May) per year:")
+        for year, duration in longest_accidents_per_year.items():
+            print(f"Year: {year}, Duration: {duration:.2f} hours")
     print("\n")
 
 
