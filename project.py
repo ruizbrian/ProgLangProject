@@ -1,10 +1,9 @@
 #############################################
-## Name: GUSTAVO JIMENEZ                   
-## Course: cmps3500
 ## CLASS Project
-## DATE: 4.12.2024                         
-## ORGN: CSUB - CMPS 3500                  
-## FILE: project.py                        
+## Course: cmps3500
+## Date: 4.12.2024                         
+## Orgn: CSUB - CMPS 3500                  
+## File: project.py                        
 ## Student 1: Gustavo Jimenez
 ## Student 2: David Ayeni
 ## Student 3: 
