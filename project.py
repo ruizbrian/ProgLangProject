@@ -6,7 +6,7 @@
 ## File: project.py                        
 ## Student 1: Gustavo Jimenez
 ## Student 2: David Ayeni
-## Student 3: 
+## Student 3: Brian Ruiz
 ## Student 4: 
 ## DESCRIPTION: Implementation Basic Data Analysis Routine
 #############################################
@@ -292,7 +292,7 @@ def main():
                 print("Please load data first.\n\n\n")
         elif choice == "3":
             if data is not None:
-               
+                
                 print("Answering questions:\n")
                 Question1(data)
                 Question2(data)
@@ -339,7 +339,6 @@ def main():
         else:
             print("Invalid choice. Please enter a number from 1 to 7.")
 
-   
     end_time = time.time()  # Record end time
     total_running_time = end_time - start_time
     print(f"Total running time: {total_running_time:.2f} seconds")
