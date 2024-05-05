@@ -325,8 +325,8 @@ def main():
             print("\n\n\n")
             pass
         elif choice == "6":
-            min_t = input("Enter a minimum visibility (F): ")
-            max_t = input("Enter a maximum visibility (F): ")
+            min_t = input("Enter a minimum temperature (F): ")
+            max_t = input("Enter a maximum temperature (F): ")
             min_v = input("Enter a minimum visibility (mi): ")
             max_v = input("Enter a maximum visibility (mi): ")
             search_accidents_by_temperature_visibility(data, min_t, max_t, min_v, max_v)
