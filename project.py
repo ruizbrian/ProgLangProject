@@ -12,7 +12,7 @@
 ## DESCRIPTION: Implementation Basic Data Analysis Routine
 #############################################
 
-
+import time
 import pandas as pd
 
 def loadData(filePath):
@@ -174,6 +174,8 @@ def Question10(data):
 
 
 def search_accidents_by_state_city_zip(data, state=None, city=None, zipcode=None):
+    start_time = time.time()
+    
     # Filter data based on input values
     filtered_data = data.copy()
     if state:
@@ -187,24 +189,37 @@ def search_accidents_by_state_city_zip(data, state=None, city=None, zipcode=None
     num_accidents = len(filtered_data)
     
     print(f"Number of accidents in {state if state else 'all states'}, {city if city else 'all cities'}, {zipcode if zipcode else 'all zip codes'}: {num_accidents}")
+    
+    end_time = time.time()  # Record end time
+    search_time = end_time - start_time
+    print(f"Time to perform serach: {search_time:.2f} seconds")
 
 def search_accidents_by_year_month_day(data, year=None, month=None, day=None):
-    # Filter data based on input values
-    filtered_data = data.copy()
-    if year:
-        filtered_data = filtered_data[filtered_data['Start_Time'].dt.year == year]
-    if month:
-        filtered_data = filtered_data[filtered_data['Start_Time'].dt.month == month]
-    if day:
-        filtered_data = filtered_data[filtered_data['Start_Time'].dt.day == day]
-    
+    start_time = time.time()
+  
+    datacopy = data.copy()
+    datacopy['Start_Time'] = datacopy['Start_Time'].astype(str)
+    filtered_data = datacopy.copy()
+    if year is not None:
+        filtered_data = filtered_data[filtered_data['Start_Time'].str.startswith(str(year))]
+    if month is not None:
+        filtered_data = filtered_data[filtered_data['Start_Time'].str[5:7] == str(month).zfill(2)]
+    if day is not None:
+        filtered_data = filtered_data[filtered_data['Start_Time'].str[8:10] == str(day).zfill(2)]
+       
     # Count the number of accidents
     num_accidents = len(filtered_data)
     
     print(f"Number of accidents in {year if year else 'all years'}, {month if month else 'all months'}, {day if day else 'all days'}: {num_accidents}")
+    
+    end_time = time.time()  # Record end time
+    search_time = end_time - start_time
+    print(f"Time to perform serach: {search_time:.2f} seconds")
 
 def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=None, min_visibility=None, max_visibility=None):  
- #Convert input values to float if they are not None
+    start_time = time.time()
+    
+    #Convert input values to float if they are not None
     if min_temp is not None:
         min_temp = float(min_temp)
     if max_temp is not None:
@@ -226,9 +241,13 @@ def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=Non
     
     print(f"Number of accidents with temperature between {min_temp if min_temp else 'any'} and {max_temp if max_temp else 'any'} Fahrenheit, and visibility between {min_visibility if min_visibility else 'any'} and {max_visibility if max_visibility else 'any'} miles: {num_accidents}")
 
-# Example usage:
+    end_time = time.time()  # Record end time
+    search_time = end_time - start_time
+    print(f"Time to perform serach: {search_time:.2f} seconds")
 
 def main():
+    start_time = time.time()
+
     filePath = "US_Accidents_data.csv"
     data = None
 
@@ -250,7 +269,8 @@ def main():
                 print("Please load data first.\n\n\n")
         elif choice == "3":
             if data is not None:
-                
+               
+                print("Answering questions:\n")
                 Question1(data)
                 Question2(data)
                 Question3(data)
@@ -266,26 +286,26 @@ def main():
             else:
                 print("Please load data first.\n\n\n")
         elif choice == "4":
-            state = input("Enter State(e.g CA): ")
-            city = input("Enter city: ")
-            zipcode = input("Enter zipcode: ")
+            state = input("Enter a State(e.g CA): ")
+            city = input("Enter a city: ")
+            zipcode = input("Enter a zipcode: ")
             search_accidents_by_state_city_zip(data, state, city, zipcode)
 
             print("\n\n\n")
             pass
         elif choice == "5":
-            year = input("Enter year: ")
-            month = input("Enter month: ")
-            day = input("Enter day: ")
+            year = input("Enter a year: ")
+            month = input("Enter a month: ")
+            day = input("Enter a day: ")
             search_accidents_by_year_month_day(data, year, month, day)
 
             print("\n\n\n")
             pass
         elif choice == "6":
-            min_t = input("Enter minimum visibility: ")
-            max_t = input("Enter maximum visibility: ")
-            min_v = input("Enter minimum visibility: ")
-            max_v = input("Enter maximum visibility: ")
+            min_t = input("Enter a minimum visibility (F): ")
+            max_t = input("Enter a maximum visibility (F): ")
+            min_v = input("Enter a minimum visibility (mi): ")
+            max_v = input("Enter a maximum visibility (mi): ")
             search_accidents_by_temperature_visibility(data, min_t, max_t, min_v, max_v)
 
             print("\n\n\n")
@@ -296,7 +316,10 @@ def main():
         else:
             print("Invalid choice. Please enter a number from 1 to 7.")
 
-
+   
+    end_time = time.time()  # Record end time
+    total_running_time = end_time - start_time
+    print(f"Total running time: {total_running_time:.2f} seconds")
 
 
 
