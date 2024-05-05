@@ -15,31 +15,54 @@ import time
 import pandas as pd
 
 def loadData(filePath):
-    """
-    Function to load the dataset from a CSV file
-    """
-    # Read CSV file
-    data = pd.read_csv(filePath)
+    #Function to load the dataset from a CSV file
+    print("Loading and cleaning input data set:")
+    print("************************************")
+    
+    start_time = time.time()
 
-    data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
+    # Read CSV file
+    print(f"[{time.strftime('%H:%M:%S')}] Starting Script")
+    print(f"[{time.strftime('%H:%M:%S')}] Loading {filePath}")
+    data = pd.read_csv(filePath)
+    
+    total_columns = len(data.columns)
+    print(f"[{time.strftime('%H:%M:%S')}] Total Columns Read: {total_columns}")
+    # Total rows read
+    total_rows = len(data)
+    print(f"[{time.strftime('%H:%M:%S')}] Total Rows Read: {total_rows}")
+
+    end_time = time.time()
+    load_time = end_time - start_time
+    print(f"\nTime to load is: {load_time:.2f} seconds")
 
     return data
 
 def cleanData(data):
+    print("Processing input data set:")
+    print("**************************")
 
+    start_time = time.time()
+    print(f"[{time.strftime('%H:%M:%S')}] Performing Data Clean Up")
+
+    data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
     data = data.dropna()
     checkColumns = ['ID', 'Severity', 'Zipcode', 'Start_Time', 'End_Time', 'Visibility(mi)', 'Weather_Condition', 'Country']
     data = data.dropna(subset=checkColumns)
-
     data = data.dropna(thresh=5)
-
     data = data[data['Distance(mi)'] != 0]
-
     data['Zipcode'] = data['Zipcode'].astype(str).str[:5]
-
     data['Start_Time'] = pd.to_datetime(data['Start_Time'])
     data['End_Time'] = pd.to_datetime(data['End_Time'])
     data = data[data['End_Time'] != data['Start_Time']]
+
+    total_rows = len(data)
+    print(f"[{time.strftime('%H:%M:%S')}] Total Rows Read after cleaning is: {total_rows}")
+    
+    end_time = time.time()
+    process_time = end_time - start_time
+    print(f"\nTime to process is: {process_time:.2f} seconds")
+
 
     return data
 
@@ -200,17 +223,17 @@ def search_accidents_by_year_month_day(data, year=None, month=None, day=None):
     datacopy = data.copy()
     datacopy['Start_Time'] = datacopy['Start_Time'].astype(str)
     filtered_data = datacopy.copy()
-    if year is not None:
+    if year:
         filtered_data = filtered_data[filtered_data['Start_Time'].str.startswith(str(year))]
-    if month is not None:
+    if month:
         filtered_data = filtered_data[filtered_data['Start_Time'].str[5:7] == str(month).zfill(2)]
-    if day is not None:
+    if day:
         filtered_data = filtered_data[filtered_data['Start_Time'].str[8:10] == str(day).zfill(2)]
        
     # Count the number of accidents
     num_accidents = len(filtered_data)
     
-    print(f"Number of accidents in {year if year else 'all years'}, {month if month else 'all months'}, {day if day else 'all days'}: {num_accidents}")
+    print(f"Number of accidents in {year if year else 'all years'}-{month if month else 'all months'}-{day if day else 'all days'}: {num_accidents}")
     
     end_time = time.time()  # Record end time
     search_time = end_time - start_time
@@ -220,20 +243,20 @@ def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=Non
     start_time = time.time()
     
     #Convert input values to float if they are not None
-    if min_temp is not None:
+    if min_temp:
         min_temp = float(min_temp)
-    if max_temp is not None:
+    if max_temp:
         max_temp = float(max_temp)
-    if min_visibility is not None:
+    if min_visibility:
         min_visibility = float(min_visibility)
-    if max_visibility is not None:
+    if max_visibility:
         max_visibility = float(max_visibility)
     
     # Filter data based on input values
     filtered_data = data.copy()
-    if min_temp is not None and max_temp is not None:
+    if min_temp and max_temp:
         filtered_data = filtered_data[(filtered_data['Temperature(F)'] >= min_temp) & (filtered_data['Temperature(F)'] <= max_temp)]
-    if min_visibility is not None and max_visibility is not None:
+    if min_visibility and max_visibility:
         filtered_data = filtered_data[(filtered_data['Visibility(mi)'] >= min_visibility) & (filtered_data['Visibility(mi)'] <= max_visibility)]
     
     # Count the number of accidents
