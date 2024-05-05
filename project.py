@@ -273,6 +273,7 @@ def main():
 
     filePath = "US_Accidents_data.csv"
     data = None
+    data_loaded = False  # Flag to track whether data has been loaded
 
     while True:
         display_menu()
@@ -281,11 +282,12 @@ def main():
         if choice == "1":
             if data is None:
                 data = loadData(filePath)
+                data_loaded = True  # Set data_loaded flag to True
                 print("Data loaded successfully.\n\n\n")
             else:
                 print("Data is already loaded.\n\n\n")
         elif choice == "2":
-            if data is not None:
+            if data_loaded:  # Check if data is loaded before processing
                 data = cleanData(data)
                 print("Data processed successfully.\n\n\n")
             else:
