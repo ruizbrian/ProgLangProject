@@ -21,16 +21,18 @@ def loadData(filePath):
     
     start_time = time.time() # Record start time
 
+    data = None
+
     # Read CSV file
     print(f"[{time.strftime('%H:%M:%S')}] Starting Script")
     print(f"[{time.strftime('%H:%M:%S')}] Loading {filePath}")
     data = pd.read_csv(filePath)
-    
-    total_columns = len(data.columns)
-    print(f"[{time.strftime('%H:%M:%S')}] Total Columns Read: {total_columns}")
-    # Total rows read
-    total_rows = len(data)
-    print(f"[{time.strftime('%H:%M:%S')}] Total Rows Read: {total_rows}")
+    if data is not None:
+        total_columns = len(data.columns)
+        print(f"[{time.strftime('%H:%M:%S')}] Total Columns Read: {total_columns}")
+        # Total rows read
+        total_rows = len(data)
+        print(f"[{time.strftime('%H:%M:%S')}] Total Rows Read: {total_rows}")
 
     end_time = time.time() # Record end time
     load_time = end_time - start_time # Calculate load time
@@ -317,8 +319,11 @@ def main():
         if choice == "1":
             if data is None:
                 data = loadData(filePath)
-                data_loaded = True  # Set data_loaded flag to True
-                print("Data loaded successfully.\n\n\n")
+                if data is not None:
+                    data_loaded = True  # Set data_loaded flag to True
+                    print("Data loaded successfully.\n\n\n")
+                else:
+                    print("Data unable to load. \n\n\n")
             else:
                 print("Data is already loaded.\n\n\n")
         elif choice == "2":
