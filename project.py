@@ -7,19 +7,19 @@
 ## Student 1: Gustavo Jimenez
 ## Student 2: David Ayeni
 ## Student 3: Brian Ruiz
-## Student 4: 
+## Student 4: Russell Barreyro
 ## DESCRIPTION: Implementation Basic Data Analysis Routine
 #############################################
 
-import time
-import pandas as pd
+import time # Importing the time module for time-related functionality
+import pandas as pd # Importing pandas library for data manipulation
 
 def loadData(filePath):
     #Function to load the dataset from a CSV file
     print("Loading and cleaning input data set:")
     print("************************************")
     
-    start_time = time.time()
+    start_time = time.time() # Record start time
 
     # Read CSV file
     print(f"[{time.strftime('%H:%M:%S')}] Starting Script")
@@ -32,35 +32,44 @@ def loadData(filePath):
     total_rows = len(data)
     print(f"[{time.strftime('%H:%M:%S')}] Total Rows Read: {total_rows}")
 
-    end_time = time.time()
-    load_time = end_time - start_time
+    end_time = time.time() # Record end time
+    load_time = end_time - start_time # Calculate load time
     print(f"\nTime to load is: {load_time:.2f} seconds")
 
     return data
 
 def cleanData(data):
+    # Function to clean the loaded dataset
     print("Processing input data set:")
     print("**************************")
 
-    start_time = time.time()
+    start_time = time.time() # Record start time
     print(f"[{time.strftime('%H:%M:%S')}] Performing Data Clean Up")
-
+    
+     # Data cleaning operations:
+     # Remove columns with 'Unnamed' in their name
     data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
+     # Drop rows with any NA/null values
     data = data.dropna()
     checkColumns = ['ID', 'Severity', 'Zipcode', 'Start_Time', 'End_Time', 'Visibility(mi)', 'Weather_Condition', 'Country']
     data = data.dropna(subset=checkColumns)
+     # Drop rows with less than 5 non-NA values
     data = data.dropna(thresh=5)
+    # Remove rows where Distance(mi) is 0
     data = data[data['Distance(mi)'] != 0]
+     # Extract first 5 characters of 'Zipcode' column
     data['Zipcode'] = data['Zipcode'].astype(str).str[:5]
+    # Convert 'Start_Time' and 'End_Time' to datetime objects
     data['Start_Time'] = pd.to_datetime(data['Start_Time'])
     data['End_Time'] = pd.to_datetime(data['End_Time'])
+    # Remove rows where 'End_Time' equals 'Start_Time'
     data = data[data['End_Time'] != data['Start_Time']]
 
     total_rows = len(data)
     print(f"[{time.strftime('%H:%M:%S')}] Total Rows Read after cleaning is: {total_rows}")
     
-    end_time = time.time()
-    process_time = end_time - start_time
+    end_time = time.time() # Record end time
+    process_time = end_time - start_time # Calculate processing time
     print(f"\nTime to process is: {process_time:.2f} seconds")
 
 
@@ -68,6 +77,7 @@ def cleanData(data):
 
 
 def display_menu():
+     # Function to display the menu options
     print("Menu:")
     print("1. Load data")
     print("2. Process data")
@@ -81,7 +91,9 @@ def display_menu():
 def Question1(data):
     print("\n\t1. What are the 3 months with the highest amount accidents reported?")
     month_names = {1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August', 9: 'September', 10: 'October', 11: 'November', 12: 'December'}
+   # Count accidents per month and sort in descending order
     accidents_per_month = data['Start_Time'].dt.month.value_counts().sort_values(ascending=False)
+   # Print the top 3 months with the highest accident counts
     for month_num, count in accidents_per_month.head(3).items():
         month_name = month_names[month_num]
         print(f"{month_name}: {count} accidents")
@@ -89,17 +101,23 @@ def Question1(data):
 
 def Question2(data):
     print("\t2. What is the year with the highest amount of accidents reported?")
+     # Count accidents per year
     accidents_per_year = data['Start_Time'].dt.year.value_counts()
+     # Get the year with the maximum number of accidents
     max_year = accidents_per_year.idxmax()
     print(f"Year with the most accidents: {max_year}\n")
 
 def Question3(data):
     print("\t3. What is the state that had the most accidents of severity 2?, display the data per year.")
+     # Filter data for severity 2 accidents
     severity_2_data = data[data['Severity'] == 2]
+     # Count severity 2 accidents per state
     accidents_per_state = severity_2_data['State'].value_counts()
     max_state = accidents_per_state.idxmax()
     print(f"The state that had the most accidents of severity 2: {max_state}")
+     # Filter data for the state with the most severity 2 accidents
     state_data = severity_2_data[severity_2_data['State'] == max_state]
+     # Count severity 2 accidents per year in the state
     accidents_per_year = state_data['Start_Time'].dt.year.value_counts().sort_index()
     print("Accidents per year:")
     for year, count in accidents_per_year.items():
@@ -108,18 +126,22 @@ def Question3(data):
 
 def Question4(data):
     print("\t4. What severity is the most common in Virginia, California and Florida?")
+     # List of states to analyze
     states = ['VA', 'CA', 'FL']
     for state in states:
-        state_data = data[data['State'] == state]
-        severity_counts = state_data['Severity'].value_counts()
-        most_common_severity = severity_counts.idxmax()
+        state_data = data[data['State'] == state] # Filter data for the state
+        severity_counts = state_data['Severity'].value_counts() # Count severity occurrences in the state
+        most_common_severity = severity_counts.idxmax() # Get the most common severity
         print(f"Most common severity in {state}: Severity {most_common_severity}")
     print("")
 
 def Question5(data):
     print("\t5. What are the 5 cities that had the most accidents in in California? display the data per year.")
+     # Filter data for California
     california_data = data[data['State'] == 'CA']
+     # Group accidents by city and year, then count accidents per city per year
     accidents_per_city = california_data.groupby([california_data['City'], california_data['Start_Time'].dt.year]).size().reset_index(name='Accident Count')
+     # Iterate over years and print top 5 cities with the most accidents each yea
     for year, year_data in accidents_per_city.groupby('Start_Time'):
         print(f"Year {year}:")
         top_5 = year_data.nlargest(5, 'Accident Count')
@@ -129,9 +151,12 @@ def Question5(data):
 
 def Question6(data):
     print("\t6. What was the average humidity and average temperature of all accidents of severity 4 that occurred in the city of Boston? display the data per month.")
+     # Filter data for severity 4 accidents in Boston
     boston_data = data[(data['Severity'] == 4) & (data['City'] == 'Boston')]
+     # Group data by month and calculate average humidity and temperature
     boston_data = boston_data.copy()
     boston_data['Month'] = boston_data['Start_Time'].dt.month
+     # Map month numbers to month names for readability
     monthly_average = boston_data.groupby('Month').agg({'Humidity(%)': 'mean', 'Temperature(F)': 'mean'}).reset_index()
     monthly_average['Month'] = monthly_average['Month'].map({1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August', 9: 'September', 10: 'October', 11: 'November', 12: 'December'})
     print("Average Humidity and Temperature for Severity 4 Accidents in Boston:")
@@ -140,11 +165,15 @@ def Question6(data):
 
 def Question7(data):
     print("\t7. What are the 3 most common weather conditions (weather_conditions) when accidents occurred in New York city? display the data per month.")
+     # Filter data for New York City
     nyc_data = data[(data['City'] == 'New York') & (data['State'] == 'NY')]
     nyc_data = nyc_data.copy()
+      # Extract month from start time
     nyc_data['Month'] = nyc_data['Start_Time'].dt.month
+     # Count occurrences of each weather condition per month
     weather_counts = nyc_data.groupby(['Month', 'Weather_Condition']).size().reset_index(name='Count')
     weather_counts['Month'] = weather_counts['Month'].map({1: 'January', 2: 'February', 3: 'March', 4: 'April', 5: 'May', 6: 'June', 7: 'July', 8: 'August', 9: 'September', 10: 'October', 11: 'November', 12: 'December'})
+     # Iterate over unique months and print top 3 weather conditions for each month
     for month in weather_counts['Month'].unique():
         month_data = weather_counts[weather_counts['Month'] == month]
         top_3_weather_conditions = month_data.nlargest(3, 'Count').reset_index(drop=True)
@@ -154,25 +183,28 @@ def Question7(data):
 
 def Question8(data):
     print("\t8. What was the maximum visibility of all accidents of severity 2 that occurred in the state of New Hampshire?")
+     # Filter data for severity 2 accidents in New Hampshire
     nh_data = data[(data['State'] == 'NH') & (data['Severity'] == 2)]
-    
+      # Check if there are any accidents with severity 2 in New Hampshire
     if nh_data.empty:
         print("No accidents with severity 2 found in the state of New Hampshire.")
     else:
-        max_visibility = nh_data['Visibility(mi)'].max()
+        max_visibility = nh_data['Visibility(mi)'].max()  # Calculate maximum visibility
         print(f"The maximum visibility of accidents with severity 2 in New Hampshire is: {max_visibility} miles.")
     print("")
 
 def Question9(data):
     print("\t9. How many accidents of each severity were recorded in Bakersfield? Display the data per year.")
-    bakersfield_data = data[data['City'] == 'Bakersfield']
-    
+    bakersfield_data = data[data['City'] == 'Bakersfield'] # Filter data for Bakersfield
+     # Check if there are any accidents recorded in Bakersfield
     if bakersfield_data.empty:
         print("No accidents recorded in Bakersfield.")
     else:
-        bakersfield_data = bakersfield_data.copy()
+        bakersfield_data = bakersfield_data.copy() # Extract year from start time
         bakersfield_data['Year'] = bakersfield_data['Start_Time'].dt.year
+          # Count occurrences of each severity per year
         severity_counts = bakersfield_data.groupby(['Year', 'Severity']).size().reset_index(name='Count')
+         # Print severity counts per year
         for year in severity_counts['Year'].unique():
             year_data = severity_counts[severity_counts['Year'] == year]
             print(f"Year: {year}")
@@ -181,13 +213,15 @@ def Question9(data):
 
 def Question10(data):
     print("\t10. What was the longest accident (in hours) recorded in Las Vegas in the Spring (March, April, and May)? Display the data per year.")
+     # Filter data for Las Vegas during Spring
     lv_data = data[(data['City'] == 'Las Vegas') & (data['Start_Time'].dt.month.isin([3, 4, 5]))]
-    
+     # Check if there are any accidents recorded in Las Vegas during Spring
     if lv_data.empty:
         print("No accidents recorded in Las Vegas during Spring (March, April, May).")
     else:
-        lv_data = lv_data.copy()
+        lv_data = lv_data.copy()  # Calculate duration of each accident in hours
         lv_data['Duration'] = (lv_data['End_Time'] - lv_data['Start_Time']).dt.total_seconds() / 3600
+         # Find the longest accident per year
         longest_accidents_per_year = lv_data.groupby(lv_data['Start_Time'].dt.year)['Duration'].max()
         print("Longest accident (in hours) recorded in Las Vegas in the Spring (March, April, and May) per year:")
         for year, duration in longest_accidents_per_year.items():
@@ -269,14 +303,15 @@ def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=Non
     print(f"Time to perform serach: {search_time:.2f} seconds")
 
 def main():
-    start_time = time.time()
+      # Main function to run the program
+    start_time = time.time() # Record start time
 
     filePath = "US_Accidents_data.csv"
     data = None
     data_loaded = False  # Flag to track whether data has been loaded
 
     while True:
-        display_menu()
+        display_menu() # Display menu options
         choice = input("Enter your choice: ")
 
         if choice == "1":
@@ -296,6 +331,7 @@ def main():
             if data is not None:
                 
                 print("Answering questions:\n")
+                 # Call functions to answer questions 1 to 10
                 Question1(data)
                 Question2(data)
                 Question3(data)
@@ -311,6 +347,7 @@ def main():
             else:
                 print("Please load data first.\n\n\n")
         elif choice == "4":
+             # Get input from user and call function to search accidents
             state = input("Enter a State(e.g CA): ")
             city = input("Enter a city: ")
             zipcode = input("Enter a zipcode: ")
@@ -319,6 +356,7 @@ def main():
             print("\n\n\n")
             pass
         elif choice == "5":
+            # Get input from user and call function to search accidents
             year = input("Enter a year: ")
             month = input("Enter a month: ")
             day = input("Enter a day: ")
@@ -327,6 +365,7 @@ def main():
             print("\n\n\n")
             pass
         elif choice == "6":
+             # Get input from user and call function to search accidents
             min_t = input("Enter a minimum temperature (F): ")
             max_t = input("Enter a maximum temperature (F): ")
             min_v = input("Enter a minimum visibility (mi): ")
@@ -342,7 +381,7 @@ def main():
             print("Invalid choice. Please enter a number from 1 to 7.")
 
     end_time = time.time()  # Record end time
-    total_running_time = end_time - start_time
+    total_running_time = end_time - start_time # Calculate total running time
     print(f"Total running time: {total_running_time:.2f} seconds")
 
 
