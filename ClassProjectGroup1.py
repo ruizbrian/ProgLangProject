@@ -21,7 +21,37 @@ def loadData(filePath):
     print("************************************")
     
     start_time = time.time() # Record start time
+def loadData(filePath=None):
+    # Function to load the dataset from a CSV file
+    print("Loading and cleaning input data set:")
+    print("************************************")
 
+    start_time = time.time() # Record start time
+
+    data = None
+
+    if filePath is None:
+        # List all CSV files in the current directory
+        files = [f for f in os.listdir() if f.endswith('.csv')]
+        if not files:
+            print("No CSV files found in the current directory.")
+            return None
+        else:
+            print("Available CSV files in the current directory:")
+            for idx, file in enumerate(files, 1):
+                print(f"{idx}. {file}")
+            choice = input("Enter the number corresponding to the file you want to load: ")
+            try:
+                idx = int(choice) - 1
+                if idx < 0 or idx >= len(files):
+                    print("Invalid choice.")
+                    return None
+                filePath = files[idx]
+            except ValueError:
+                print("Invalid choice. Please enter a number.")
+                return None
+
+   
     data = None
 
     # Read CSV file
@@ -336,28 +366,12 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            print("\nAvailable files:")
-            for i, file_name in enumerate(file_names, start=1):
-                print(f"{i}. {file_name}")
-
-            file_choice = input("Enter the number of the file you want to load: ")
-            try:
-                file_choice = int(file_choice)
-                if 1 <= file_choice <= len(file_names):
-                    file_path = file_names[file_choice - 1]
-                    if os.path.exists(file_path):
-                        data = loadData(file_path)
-                        if data is not None:
-                            data_loaded = True
-                            print("Data loaded successfully.\n")
-                        else:
-                            print("Data unable to load.\n")
-                    else:
-                        print("File not found.\n")
-                else:
-                    print("Invalid file number.\n")
-            except ValueError:
-                print("Invalid input.\n")
+            data = loadData()
+            if data is not None:
+                data_loaded = True
+                print("Data loaded successfully.\n")
+            else:
+                print("Data unable to load.\n")
 
         elif choice == "2":
             if data_loaded:  # Check if data is loaded before processing
