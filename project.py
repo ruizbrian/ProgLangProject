@@ -317,16 +317,17 @@ def main():
     # Main function to run the program
     start_time = time.time() # Record start time
 
-    file_names = ["./data/US_Accidents_data.csv", "./data/InputDataSample.csv", "./data/Boston_Lyft_Uber_Data.csv", "test"]  
+    file_names = ["./data/US_Accidents_data.csv", "./data/InputDataSample.csv", "./data/Boston_Lyft_Uber_Data.csv"]  
     data = None
     data_loaded = False  # Flag to track whether data has been loaded
+    data_processed = False
 
     while True:
         display_menu() # Display menu options
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            print("Available files:")
+            print("\nAvailable files:")
             for i, file_name in enumerate(file_names, start=1):
                 print(f"{i}. {file_name}")
 
@@ -339,6 +340,8 @@ def main():
                         data = loadData(file_path)
                         if data is not None:
                             data_loaded = True
+                            if file_path == "./data/US_Accidents_data.csv":
+                                data_processed = True
                             print("Data loaded successfully.\n")
                         else:
                             print("Data unable to load.\n")
@@ -350,14 +353,13 @@ def main():
                 print("Invalid input.\n")
 
         elif choice == "2":
-            if data_loaded:  # Check if data is loaded before processing
+            if data_loaded and data_processed:  # Check if data is loaded before processing
                 data = cleanData(data)
                 print("Data processed successfully.\n\n\n")
             else:
-                print("Please load data first.\n\n\n")
+                print("Data cannot be processed due to different column criteria.\n\n\n")
         elif choice == "3":
-            if data is not None:
-                
+            if data_processed:
                 print("Answering questions:\n")
                 # Call functions to answer questions 1 to 10
                 Question1(data)
@@ -373,40 +375,40 @@ def main():
 
                 print("\n\n\n")
             else:
-                print("Please load data first.\n\n\n")
+                print("Data not processed.\n\n\n")
         elif choice == "4":
             # Get input from user and call function to search accidents
-            if data_loaded:
+            if data_processed:
                 state = input("Enter a State(e.g CA): ").upper()  # Convert user input to uppercase
                 city = input("Enter a city: ").capitalize()
                 zipcode = input("Enter a zipcode: ") 
                 search_accidents_by_state_city_zip(data, state, city, zipcode)
             else:
-                print("Please load data first.\n")
+                print("Data not processed.\n\n\n")
 
             print("\n\n\n")
             pass
         elif choice == "5":
             # Get input from user and call function to search accidents
-            if data_loaded:
+            if data_processed:
                 year = input("Enter a year (YYYY): ")
                 month = input("Enter a month (MM): ")
                 day = input("Enter a day (DD): ") 
                 search_accidents_by_year_month_day(data, year, month, day)
             else:
-                print("Please load data first.\n")
+                print("Data not processed.\n\n\n")
             print("\n\n\n")
             pass
         elif choice == "6":
             # Get input from user and call function to search accidents
-            if data_loaded:
+            if data_processed:
                 min_t = input("Enter a minimum temperature (F): ")
                 max_t = input("Enter a maximum temperature (F): ")
                 min_v = input("Enter a minimum visibility (mi): ")
                 max_v = input("Enter a maximum visibility (mi): ")
                 search_accidents_by_temperature_visibility(data, min_t, max_t, min_v, max_v)
             else:
-                print("Please load data first.\n")
+                print("Data not processed.\n\n\n")
 
             print("\n\n\n")
             pass
