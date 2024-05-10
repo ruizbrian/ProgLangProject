@@ -128,15 +128,22 @@ def Question3(data):
     print("")
 
 def Question4(data):
-    print("\t4. What severity is the most common in Virginia, California and Florida?")
+    print("\t4. What severity is the most common in Virginia, California, and Florida?")
     # List of states to analyze
     states = ['VA', 'CA', 'FL']
     for state in states:
         state_data = data[data['State'] == state] # Filter data for the state
-        severity_counts = state_data['Severity'].value_counts() # Count severity occurrences in the state
-        most_common_severity = severity_counts.idxmax() # Get the most common severity
-        print(f"Most common severity in {state}: Severity {most_common_severity}")
+        if not state_data.empty:
+            severity_counts = state_data['Severity'].value_counts() # Count severity occurrences in the state
+            if not severity_counts.empty:
+                most_common_severity = severity_counts.idxmax() # Get the most common severity
+                print(f"Most common severity in {state}: Severity {most_common_severity}")
+            else:
+                print(f"No severity data available for {state}")
+        else:
+            print(f"No data available for {state}")
     print("")
+
 
 def Question5(data):
     print("\t5. What are the 5 cities that had the most accidents in in California? display the data per year.")
@@ -252,7 +259,7 @@ def search_accidents_by_state_city_zip(data, state=None, city=None, zipcode=None
     
     end_time = time.time()  # Record end time
     search_time = end_time - start_time
-    print(f"Time to perform serach: {search_time:.2f} seconds")
+    print(f"Time to perform search: {search_time:.2f} seconds")
 
 def search_accidents_by_year_month_day(data, year=None, month=None, day=None):
     start_time = time.time()
@@ -370,9 +377,9 @@ def main():
         elif choice == "4":
             # Get input from user and call function to search accidents
             if data_loaded:
-                state = input("Enter a State(e.g CA): ")
-                city = input("Enter a city: ")
-                zipcode = input("Enter a zipcode: ")
+                state = input("Enter a State(e.g CA): ").upper()  # Convert user input to uppercase
+                city = input("Enter a city: ").capitalize()
+                zipcode = input("Enter a zipcode: ") 
                 search_accidents_by_state_city_zip(data, state, city, zipcode)
             else:
                 print("Please load data first.\n")
@@ -382,9 +389,9 @@ def main():
         elif choice == "5":
             # Get input from user and call function to search accidents
             if data_loaded:
-                year = input("Enter a year: ")
-                month = input("Enter a month: ")
-                day = input("Enter a day: ")
+                year = input("Enter a year (YYYY): ")
+                month = input("Enter a month (MM): ")
+                day = input("Enter a day (DD): ") 
                 search_accidents_by_year_month_day(data, year, month, day)
             else:
                 print("Please load data first.\n")
