@@ -323,7 +323,21 @@ def search_accidents_by_year_month_day(data, year=None, month=None, day=None):
 def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=None, min_visibility=None, max_visibility=None):  
     start_time = time.time()
 
-    required_columns = ['temperature(F)', 'visibility(mi)']
+    required_columns = ['temperature(f)', 'visibility(mi)']
+
+    # Validation: Check if input values are numbers
+    if min_temp is not None and not min_temp.isdigit():
+        print("Error: min_temp must be a number.")
+        return
+    if max_temp is not None and not max_temp.isdigit():
+        print("Error: max_temp must be a number.")
+        return
+    if min_visibility is not None and not min_visibility.isdigit():
+        print("Error: min_visibility must be a number.")
+        return
+    if max_visibility is not None and not max_visibility.isdigit():
+        print("Error: max_visibility must be a number.")
+        return
     
     #Convert input values to float if they are not None
     if min_temp:
