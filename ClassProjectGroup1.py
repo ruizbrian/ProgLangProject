@@ -338,7 +338,7 @@ def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=Non
     # Filter data based on input values
     filtered_data = data.copy()
     if min_temp and max_temp:
-        filtered_data = filtered_data[(filtered_data['temperature(F)'] >= min_temp) & (filtered_data['temperature(F)'] <= max_temp)]
+        filtered_data = filtered_data[(filtered_data['temperature(f)'] >= min_temp) & (filtered_data['temperature(f)'] <= max_temp)]
     if min_visibility and max_visibility:
         filtered_data = filtered_data[(filtered_data['visibility(mi)'] >= min_visibility) & (filtered_data['visibility(mi)'] <= max_visibility)]
     
