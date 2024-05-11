@@ -15,13 +15,7 @@ import time # Importing the time module for time-related functionality
 import pandas as pd # Importing pandas library for data manipulation
 import os
 
-def loadData(filePath):
-    #Function to load the dataset from a CSV file
-    print("Loading and cleaning input data set:")
-    print("************************************")
-    
-    start_time = time.time() # Record start time
-def loadData(filePath=None):
+def load_data(filePath=None):
     # Function to load the dataset from a CSV file
     print("Loading and cleaning input data set:")
     print("************************************")
@@ -74,7 +68,7 @@ def loadData(filePath=None):
     return data
 
 
-def cleanData(data):
+def clean_data(data):
     # Function to clean the loaded dataset
     print("Processing input data set:")
     print("**************************")
@@ -86,7 +80,7 @@ def cleanData(data):
     data.columns = map(str.lower, data.columns)
 
     # Check if all required columns exist
-    required_columns = ['id', 'severity', 'zipcode', 'start_time', 'end_time', 'visibility(mi)', 'weather_condition', 'country']
+    required_columns = ['id', 'severity', 'zipcode', 'start_time', 'end_time','visibility(mi)', 'weather_condition', 'country']
     missing_columns = [col for col in required_columns if col not in data.columns]
     if missing_columns:
         print(f"Error: Missing columns: {', '.join(missing_columns)}")
@@ -97,7 +91,7 @@ def cleanData(data):
     data = data.loc[:, ~data.columns.str.contains('^unnamed')]
     # Drop rows with any NA/null values
     data = data.dropna()
-    checkColumns = ['id', 'severity', 'zipcode', 'start_time', 'end_time', 'visibility(mi)', 'weather_condition', 'country']
+    checkColumns = ['id', 'severity', 'zipcode', 'start_time', 'end_time','visibility(mi)', 'weather_condition', 'country']
     data = data.dropna(subset=checkColumns)
     # Drop rows with less than 5 non-NA values
     data = data.dropna(thresh=5)
@@ -284,12 +278,16 @@ def search_accidents_by_state_city_zip(data, state=None, city=None, zipcode=None
     
     # Filter data based on input values
     filtered_data = data.copy()
-    if state:
-        filtered_data = filtered_data[filtered_data['state'] == state]
-    if city:
-        filtered_data = filtered_data[filtered_data['city'] == city]
-    if zipcode:
-        filtered_data = filtered_data[filtered_data['zipcode'] == zipcode]
+    try:
+        if state:
+            filtered_data = filtered_data[filtered_data['state'] == state]
+        if city:
+            filtered_data = filtered_data[filtered_data['city'] == city]
+        if zipcode:
+            filtered_data = filtered_data[filtered_data['zipcode'] == zipcode]
+    except KeyError:
+            print("Error: Invalid column name. Please make sure your data contains 'state', 'city', and 'zipcode' columns.")
+            return
     
     # Count the number of accidents
     num_accidents = len(filtered_data)
@@ -324,6 +322,8 @@ def search_accidents_by_year_month_day(data, year=None, month=None, day=None):
 
 def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=None, min_visibility=None, max_visibility=None):  
     start_time = time.time()
+
+    required_columns = ['temperature(F)', 'visibility(mi)']
     
     #Convert input values to float if they are not None
     if min_temp:
@@ -338,7 +338,7 @@ def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=Non
     # Filter data based on input values
     filtered_data = data.copy()
     if min_temp and max_temp:
-        filtered_data = filtered_data[(filtered_data['temperature(F)'] >= min_temp) & (filtered_data['temperature(F)'] <= max_temp)]
+        filtered_data = filtered_data[(filtered_data['temperature(f)'] >= min_temp) & (filtered_data['temperature(f)'] <= max_temp)]
     if min_visibility and max_visibility:
         filtered_data = filtered_data[(filtered_data['visibility(mi)'] >= min_visibility) & (filtered_data['visibility(mi)'] <= max_visibility)]
     
@@ -349,7 +349,7 @@ def search_accidents_by_temperature_visibility(data, min_temp=None, max_temp=Non
 
     end_time = time.time()  # Record end time
     search_time = end_time - start_time
-    print(f"Time to perform serach: {search_time:.2f} seconds")
+    print(f"Time to perform search: {search_time:.2f} seconds")
 
 def main():
 
@@ -366,7 +366,7 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            data = loadData()
+            data = load_data()
             if data is not None:
                 data_loaded = True
                 print("Data loaded successfully.\n")
@@ -375,7 +375,7 @@ def main():
 
         elif choice == "2":
             if data_loaded:  # Check if data is loaded before processing
-                data = cleanData(data)
+                data = clean_data(data)
                 if data is not None:
                     data_processed = True
                     print("Data processed successfully.\n\n\n")
